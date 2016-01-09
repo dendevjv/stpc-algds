@@ -30,7 +30,7 @@ public class Ex03IndexOfMinNearest {
         }
         System.out.println();
     }
-    
+
     static int findMinimalNearest(int[] array, int number) {
         if (number < array[0]) {
             return 0;
@@ -48,34 +48,21 @@ public class Ex03IndexOfMinNearest {
                 lo = m + 1;
             }
         }
-        
+
         if (array[lo] == number) {
             while (lo >= 0 && array[lo] == number) {
                 lo--;
             }
             return lo + 1;
-        } else if (array[lo] < number) {
-            if ((lo + 1) < array.length 
-                    && (number - array[lo]) > (array[lo + 1] - number)) {
-                return lo + 1;
-            } else {
-                int t = array[lo];
-                while (lo >= 0 && array[lo] == t) {
-                    lo--;
-                }
-                return lo + 1;
-            }
-        } else { 
-            if ((number - array[lo - 1]) > (array[lo] - number)) {
-                return lo;
-            } else {
+        } else if ((number - array[lo - 1]) > (array[lo] - number)) {
+            return lo;
+        } else {
+            lo--;
+            int t = array[lo];
+            while (lo >= 0 && array[lo] == t) {
                 lo--;
-                int t = array[lo];
-                while (lo >= 0 && array[lo] == t) {
-                    lo--;
-                }
-                return lo + 1;
             }
+            return lo + 1;
         }
     }
 
