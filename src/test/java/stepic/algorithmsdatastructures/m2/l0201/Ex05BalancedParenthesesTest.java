@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 
 public class Ex05BalancedParenthesesTest {
@@ -36,7 +35,7 @@ public class Ex05BalancedParenthesesTest {
         testCases.add(new TC("[{}])", "([{}])"));
         testCases.add(new TC("([{}]", "([{}])"));
         testCases.add(new TC("}[[([{[]}", "{}[[([{[]}])]]"));
-        testCases.add(new TC("{][[[[{}[]", null));
+        testCases.add(new TC("{][[[[{}[]", null)); // Test case #9
     }
 
 //    @Test

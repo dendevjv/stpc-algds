@@ -66,13 +66,13 @@ public class Ex05BalancedParentheses {
         }
     }
 
-    static String minimalBalancedOf(String s) {
+    static String minimalBalancedOf(String input) {
         StackChar st = new StackChar();
         StackChar prefix = new StackChar();
         StackChar suffix = new StackChar();
         char opening;
-        for (int i = 0; i < s.length(); i++) {
-            char p = s.charAt(i);
+        for (int i = 0; i < input.length(); i++) {
+            char p = input.charAt(i);
             if (p == '(' || p == '{' || p == '[') {     // opening
                 st.push(p);
             } else {                                    // closing
@@ -89,12 +89,11 @@ public class Ex05BalancedParentheses {
                     if (p == ')' && opening != '(' 
                             || p == '}' && opening != '{' 
                             || p == ']' && opening != '[') {
-                        return null; // can not be balanced // TODO Check this case
+                        return null; // non balanced pair - Test case #9
                     }
                 }
             }
         }
-        // Check that the stack is not empty
         while (!st.isEmpty()) {
             opening = st.pop();
             if (opening == '(') {
@@ -103,14 +102,10 @@ public class Ex05BalancedParentheses {
                 suffix.push('}');
             } else if (opening == '[') {
                 suffix.push(']');
-            } else {
-                return null; // TODO Check this case
-            }
+            } 
         }
         
-        // Return balanced and  modified if necessary string OR null
-        String balanced = prefix.toStringReversed() + s + suffix.toString();
-        return balanced;
-    }
+        return prefix.toStringReversed() + input + suffix.toString();
+    } // end of  minimalBalancedOf
 
 }
