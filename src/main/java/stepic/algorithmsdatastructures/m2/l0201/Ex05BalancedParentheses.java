@@ -27,63 +27,41 @@ public class Ex05BalancedParentheses {
     }
     
     private static class StackChar {
-        private static final int INITIAL_CAPACITY = 2;
+        private static final int INITIAL_CAPACITY = 16;
         private char[] cbuf;
-        private int tail = -1;
-        private int head;
-        private int size;
+        private int top = -1;
         
         private StackChar() {
             cbuf = new char[INITIAL_CAPACITY];
         }
         
         private void push(char ch) {
-            ensureCapacity(size + 1);
-            cbuf[++tail] = ch;
-            size++;
-        }
-        
-        private void pushFront(char ch) {
-            head--;
-            head = (head < 0) ? cbuf.length - 1 : head;
-            cbuf[head] = ch;
-            size++;
+            ensureCapacity(top + 2);
+            cbuf[++top] = ch;
         }
         
         private char pop() {
-            size--;
-            return cbuf[tail--];
+            return cbuf[top--];
         }
 
         private void ensureCapacity(int c) {
             if (c > cbuf.length) {
-                if (head == 0) { 
-                    cbuf = Arrays.copyOf(cbuf, cbuf.length * 2);
-                } else {
-                    char[] tmp = new char[cbuf.length * 2];
-                    int current = head;
-                    for (int i = 0; i < size; i++) {
-                        tmp[i] = cbuf[current];
-                        current = (current + 1) % cbuf.length;
-                    }
-                    cbuf = tmp;
-                    head = 0;
-                    tail = size;
-                }
+                cbuf = Arrays.copyOf(cbuf, cbuf.length * 2);
             }
         }
         
-        private boolean isEmpty() { return size == 0; }
+        private boolean isEmpty() { return top == -1; }
         
         @Override
         public String toString() {
             if (isEmpty()) { return ""; }
-            StringBuilder sb = new StringBuilder();
-            int c = head;
-            for (int i = 0; i < size; i++) {
-                sb.append(cbuf[c]);
-                c = (c + 1) % cbuf.length;
-            }
+            return String.valueOf(cbuf, 0, top + 1);
+        }
+        
+        public String toStringReversed() {
+            if (isEmpty()) { return ""; }
+            StringBuilder sb = new StringBuilder(String.valueOf(cbuf, 0, top + 1));
+            sb.reverse();
             return sb.toString();
         }
     }
@@ -100,11 +78,11 @@ public class Ex05BalancedParentheses {
             } else {                                    // closing
                 if (st.isEmpty()) {     // unbalanced
                     if (p == ')') {
-                        prefix.pushFront('(');
+                        prefix.push('(');
                     } else if (p == '}') {
-                        prefix.pushFront('{');
+                        prefix.push('{');
                     } else if (p == ']') {
-                        prefix.pushFront('[');
+                        prefix.push('[');
                     }
                 } else {
                     opening = st.pop();
@@ -131,7 +109,7 @@ public class Ex05BalancedParentheses {
         }
         
         // Return balanced and  modified if necessary string OR null
-        String balanced = prefix.toString() + s + suffix.toString();
+        String balanced = prefix.toStringReversed() + s + suffix.toString();
         return balanced;
     }
 
