@@ -17,7 +17,7 @@ public class InsertionSort {
     }
 
     /** Implements insertion sort. */
-    private static void sort(int[] arr) {
+    public static void sort(int[] arr) {
         for (int i = 1; i < arr.length; i++) {
             int tmp = arr[i];
             int j = i;
