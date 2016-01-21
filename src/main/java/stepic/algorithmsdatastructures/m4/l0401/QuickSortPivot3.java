@@ -1,4 +1,4 @@
-package stepic.algorithmsdatastructures.m3.l0401;
+package stepic.algorithmsdatastructures.m4.l0401;
 
 import java.util.Arrays;
 

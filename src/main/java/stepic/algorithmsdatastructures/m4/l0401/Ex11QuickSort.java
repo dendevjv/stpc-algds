@@ -13,7 +13,7 @@
     Sample Output:
         21
  */
-package stepic.algorithmsdatastructures.m3.l0401;
+package stepic.algorithmsdatastructures.m4.l0401;
 
 public class Ex11QuickSort {
 
