@@ -20,4 +20,20 @@ public class RandomArrays {
         }
         return array;
     }
+    
+    public static long[] createLong(int size, long bound) {
+        long[] array = new long[size];
+        for (int i = 0; i < size; i++) {
+            array[i] = (long) (random.nextDouble() * bound);
+        }
+        return array;
+    }
+    
+    public static long[] createLong(int size) {
+        long[] array = new long[size];
+        for (int i = 0; i < size; i++) {
+            array[i] = random.nextLong();
+        }
+        return array;
+    }
 }
