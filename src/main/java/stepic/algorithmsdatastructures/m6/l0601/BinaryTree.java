@@ -50,9 +50,26 @@ class BinaryTree {
         public String toString() {
             return Integer.toString(value);
         }
+    
+        private void traverseInOrder() {
+            level++;
+            if (level > maximumHeight) {
+                maximumHeight = level;
+            }
+            if (left != null) {
+                left.traverseInOrder();
+            }
+            if (right != null) {
+                right.traverseInOrder();
+            }
+            level--;
+        }
     }
 
     private TreeNode root;
+    
+    private int maximumHeight;
+    private int level;
 
     void add(int value) {
         if (root != null) {
@@ -71,6 +88,15 @@ class BinaryTree {
     void printPostOrder() {
         if (root != null) {
             root.printPostOrder();
+        }
+    }
+    
+    int getHeight() {
+        if (root != null) {
+            root.traverseInOrder();
+            return maximumHeight;
+        } else {
+            return 0;
         }
     }
 }

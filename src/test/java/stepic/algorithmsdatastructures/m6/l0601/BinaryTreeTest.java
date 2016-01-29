@@ -57,4 +57,41 @@ public class BinaryTreeTest {
         }
     }
 
+    @Test
+    public void testGetHeight() {
+        assertEquals(0, tree.getHeight());
+
+        tree.add(5);
+        assertEquals(1, tree.getHeight());
+
+        tree.add(2);
+        assertEquals(2, tree.getHeight());
+        tree.add(13);
+        assertEquals(2, tree.getHeight());
+
+        tree.add(0);
+        assertEquals(3, tree.getHeight());
+        tree.add(3);
+        assertEquals(3, tree.getHeight());
+        tree.add(7);
+        assertEquals(3, tree.getHeight());
+        tree.add(19);
+        assertEquals(3, tree.getHeight());
+
+        tree.add(15);
+        assertEquals(4, tree.getHeight());
+        tree.add(20);
+        assertEquals(4, tree.getHeight());
+
+        tree.add(14);
+        assertEquals(5, tree.getHeight());
+        tree.add(18);
+        assertEquals(5, tree.getHeight());
+
+        tree.add(17);
+        assertEquals(6, tree.getHeight());
+
+        tree.add(16);
+        assertEquals(7, tree.getHeight());
+    }
 }
