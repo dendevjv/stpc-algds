@@ -9,33 +9,94 @@ public class AvlTree {
         
         private Node(int value, Node parent) {
             this.value = value;
+            this.parent = parent;
         }
         
         @Override
         public String toString() {
             return Integer.toString(value);
         }
-        
-        public void toStringBuilderInOrder(StringBuilder sb) {
-            if (left != null) {
-                left.toStringBuilderInOrder(sb);
+       
+        public boolean add(int value) {
+            boolean wasBalanced = false;
+            if (this.value < value) {
+                if (right != null) {
+                    wasBalanced = right.add(value);
+                } else {
+                    right = new Node(value, this);
+                }
+            } else {
+                if (left != null) {
+                    wasBalanced = left.add(value);
+                } else {
+                    left = new Node(value, this);
+                }
             }
-            sb.append(toString());
-            sb.append(' ');
-            if (right != null) {
-                right.toStringBuilderInOrder(sb);
-            }
+//            if (wasBalanced) {
+                wasBalanced = balance();
+//            }
+            return wasBalanced;
         }
         
-        public void toStringBuilderPostOrder(StringBuilder sb) {
+        public boolean delete(int value) {
+            boolean deleted = false;
+            Node parentForBalancing = parent;
+            Node substitute = null;
+            if (this.value == value) {
+                if (left != null && right != null) { // Both children
+                    if (right.left == null) {
+                        substitute = right;
+                    } else {
+                        Node rightMin = right.getMin();
+                        rightMin.parent.left = rightMin.right;
+                        if (rightMin.right != null) {
+                            rightMin.right.parent = rightMin.parent;
+                        }
+                        substitute = rightMin;
+                        substitute.right = right; 
+                        right.parent = substitute;
+                    }
+                    substitute.parent = parent;
+                    substitute.left = left; 
+                    left.parent = substitute;
+                } else if (left != null) {  // Left child
+                    left.parent = parent;
+                    substitute = left;
+                } else if (right != null) { // Right child
+                    right.parent = parent;
+                    substitute = right;
+                } else {                    // No children
+                    substitute = null;
+                }
+                setToParentNewChild(substitute);
+                
+                /* Clean references */
+                parent = null;
+                left = null;
+                right = null;
+                
+                deleted = true;
+            } else if (value < this.value && left != null) {
+                deleted = left.delete(value);
+            } else {
+                deleted = right.delete(value);
+            }
+            if (deleted) {
+                if (parentForBalancing != null) {
+                    parentForBalancing.balance();
+                } else if (substitute != null) {
+                    substitute.balance();
+                }
+            }
+            return deleted;
+        }
+        
+        private Node getMin() {
             if (left != null) {
-                left.toStringBuilderPostOrder(sb);
+                return left.getMin();
+            } else {
+                return this;
             }
-            if (right != null) {
-                right.toStringBuilderPostOrder(sb);
-            }
-            sb.append(toString());
-            sb.append(' ');
         }
         
         private void rotateLeftShort() {
@@ -50,16 +111,24 @@ public class AvlTree {
             }
             
             nodeRight.left = this;
-            if (parent != null) {
-                if (parent.left == this) {
-                    parent.left = nodeRight;
-                } else {
-                    parent.right = nodeRight;
-                }
-            } else {
-                treeRoot = nodeRight;
-            }
+            setToParentNewChild(nodeRight);
             parent = nodeRight;
+        }
+        
+        private void rotateLeftLong() {
+            if (right == null) {
+                return;
+            }
+            right.rotateRightShort();
+            rotateLeftShort();
+        }
+        
+        private void rotateRightLong() {
+            if (left == null) {
+                return;
+            }
+            left.rotateLeftShort();
+            rotateRightShort();
         }
         
         private void rotateRightShort() {
@@ -74,45 +143,42 @@ public class AvlTree {
             }
             
             nodeLeft.right = this;
-            if (parent != null) {
-                if (parent.right == this) {
-                    parent.right = nodeLeft;
-                } else {
-                    parent.left = nodeLeft;
-                }
-            } else {
-                treeRoot = nodeLeft;
-            }
+            setToParentNewChild(nodeLeft);
             parent = nodeLeft;
         }
-       
-        public void add(int value) {
-            if (this.value < value) {
-                if (right != null) {
-                    right.add(value);
+        
+        private void setToParentNewChild(Node child) {
+            if (parent != null) {
+                if (parent.left == this) {
+                    parent.left = child;
                 } else {
-                    right = new Node(value, this);
+                    parent.right = child;
                 }
-                // balance
             } else {
-                if (left != null) {
-                    left.add(value);
-                } else {
-                    left = new Node(value, this);
-                }
+                treeRoot = child;
             }
-            balance();
+            if (child != null) {
+                child.parent = parent;
+            }
         }
 
         private boolean balance() {
             int diff = compareHeights(left, right);
             if (diff > 1) {
-                // TODO right rotation
-                
+                int leftDiff = compareHeights(left.left, left.right);
+                if (leftDiff < 0) {
+                    rotateRightLong();
+                } else {
+                    rotateRightShort();
+                }
                 return true;
             } else if (diff < -1) {
-                // TODO left rotation
-                
+                int rightDiff = compareHeights(right.left, right.right);
+                if (rightDiff > 0) {
+                    rotateLeftLong();
+                } else {
+                    rotateLeftShort();
+                }
                 return true;
             }
             return false;
@@ -142,6 +208,28 @@ public class AvlTree {
                 rightHeight = rightBranch.getHeight();
             }
             return leftHeight - rightHeight;
+        }
+        
+        private void toStringBuilderInOrder(StringBuilder sb) {
+            if (left != null) {
+                left.toStringBuilderInOrder(sb);
+            }
+            sb.append(toString());
+            sb.append(' ');
+            if (right != null) {
+                right.toStringBuilderInOrder(sb);
+            }
+        }
+        
+        private void toStringBuilderPostOrder(StringBuilder sb) {
+            if (left != null) {
+                left.toStringBuilderPostOrder(sb);
+            }
+            if (right != null) {
+                right.toStringBuilderPostOrder(sb);
+            }
+            sb.append(toString());
+            sb.append(' ');
         }
         
         Node addLeft(int value) {   // For testing purposes
@@ -174,6 +262,43 @@ public class AvlTree {
         rightNode.addLeft(77);
         rightNode.addRight(99);
     }
+
+    public void add(int value) {
+        if (treeRoot == null) {
+            treeRoot = new Node(value, null);
+        } else {
+            treeRoot.add(value);
+        }
+    }
+
+    public void delete(int value) {
+        if (treeRoot != null) {
+            treeRoot.delete(value);
+        }
+    }
+    
+    public int getHeight() {
+        if (treeRoot != null) {
+            return treeRoot.getHeight();
+        }
+        return 0;
+    }
+    
+    void addLeft(int value) {     // For testing purposes
+        if (treeRoot == null) {
+            treeRoot = new Node(value, null);
+        } else {
+            treeRoot.addLeft(value);
+        }
+    }
+    
+    void addRight(int value) {     // For testing purposes
+        if (treeRoot == null) {
+            treeRoot = new Node(value, null);
+        } else {
+            treeRoot.addRight(value);
+        }
+    }
     
     void rotateLeftShort() {    // For testing purposes
         if (treeRoot != null) {
@@ -187,39 +312,7 @@ public class AvlTree {
         }
     }
     
-    public void add(int value) {
-        if (treeRoot == null) {
-            treeRoot = new Node(value, null);
-        } else {
-            // TODO add
-        }
-    }
-    
-    public int getHeight() {
-        if (treeRoot != null) {
-            return treeRoot.getHeight();
-        }
-        return 0;
-    }
-    
-    
-    public void addLeft(int value) {     // For testing purposes
-        if (treeRoot == null) {
-            treeRoot = new Node(value, null);
-        } else {
-            treeRoot.addLeft(value);
-        }
-    }
-    
-    public void addRight(int value) {     // For testing purposes
-        if (treeRoot == null) {
-            treeRoot = new Node(value, null);
-        } else {
-            treeRoot.addRight(value);
-        }
-    }
-    
-    public String toStringPostOrder() {
+    String toStringPostOrder() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         if (treeRoot != null) {
@@ -229,7 +322,7 @@ public class AvlTree {
         return sb.toString();
     }
     
-    public String toStringInOrder() {
+    String toStringInOrder() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         if (treeRoot != null) {
