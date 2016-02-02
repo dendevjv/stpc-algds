@@ -41,27 +41,22 @@ public class Ex18IndexedTree {
         java.util.Scanner in = new java.util.Scanner(System.in);
         AvlTree tree = new AvlTree();
         
+        StringBuilder buffer = new StringBuilder();
         int length = in.nextInt();
-        length /= 2;
         for (int i = 0; i < length; i++) {
             int cmd = in.nextInt();
             int number = in.nextInt();
             int index;
             if (cmd == 1) {
                 index = tree.add(number);
+                buffer.append(index);
+                buffer.append(" ");
             } else if (cmd == 2) {
-            }
-        }
-        while (in.hasNextInt()) {
-            int n = in.nextInt();
-            if (n >= 0) {
-                tree.add(n);
-            } else {
-                tree.delete(-n);
+                tree.deleteByIndex(number);
             }
         }
         in.close();
-        System.out.println(tree.getHeight());
+        System.out.print(buffer.toString());
     }
 
     static class AvlTree {
@@ -87,7 +82,6 @@ public class Ex18IndexedTree {
                 int addedIndex;
                 if (this.value > value) {
                     if (right != null) {
-                        checkIndexOfRightChild();
                         addedIndex = right.add(value);
                     } else {
                         addedIndex = index + 1;
@@ -106,12 +100,6 @@ public class Ex18IndexedTree {
                 return addedIndex;
             }
 
-            private void checkIndexOfRightChild() {
-                if ((right.index - index) < 1) {
-                    right.index = index + 1;
-                }
-            }
-            
             public boolean delete(int value) {
                 boolean deleted = false;
                 Node parentForBalancing = parent;
@@ -174,7 +162,6 @@ public class Ex18IndexedTree {
                 } else {
                     if (index < this.index && left != null) {
                         left.deleteByIndex(index);
-                        this.index--;
                     } else if (right != null) {
                         right.deleteByIndex(index);
                     }
@@ -311,9 +298,19 @@ public class Ex18IndexedTree {
                 }
             }
             
+            private void checkIndexesInOrder() {
+                if (left != null) {
+                    left.checkIndexesInOrder();
+                }
+                index = currentIndex++;
+                if (right != null) {
+                    right.checkIndexesInOrder();
+                }
+            }
         } // end of private class Node
         
         private Node treeRoot;
+        private int currentIndex;
         
         /**
          * Adds value and returns index of occupied position.
@@ -323,19 +320,23 @@ public class Ex18IndexedTree {
                 treeRoot = new Node(value, null, 0);
                 return 0;
             } else {
-                return treeRoot.add(value);
+                int index = treeRoot.add(value);
+                checkIndexes();
+                return index;
             }
         }
-
+        
         public void delete(int value) {
             if (treeRoot != null) {
                 treeRoot.delete(value);
+                checkIndexes();
             }
         }
         
         public void deleteByIndex(int index) {
             if (treeRoot != null) {
                 treeRoot.deleteByIndex(index);
+                checkIndexes();
             }
         }
         
@@ -344,6 +345,13 @@ public class Ex18IndexedTree {
                 return treeRoot.getHeight();
             }
             return 0;
+        }
+        
+        private void checkIndexes() {
+            if (treeRoot != null) {
+                currentIndex = 0;
+                treeRoot.checkIndexesInOrder();
+            }
         }
         
         String toStringInOrder() {  // For testing

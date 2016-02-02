@@ -9,23 +9,66 @@ import org.junit.Test;
 import stepic.algorithmsdatastructures.tools.SystemOutTester;
 
 public class Ex18IndexedTreeTest {
+    private static final String NL = System.lineSeparator();
 
-//    @Test
+    @Test
     public void testMain() {
         try (SystemOutTester out = new SystemOutTester()) {
-            String input = "2 4 6 -2";
-//            String input = "1 2 3 4 5 6 7 -4 -5 -6 -3 -1";
+//            String input = "5" + NL +
+//                    "1 100" + NL +
+//                    "1 200" + NL +
+//                    "1 50" + NL +
+//                    "2 1" + NL +    
+//                    "1 150" + NL;
+            String input = "14" + NL +
+                    "1 10" + NL +
+                    "1 30" + NL +
+                    "1 20" + NL +
+                    "1 50" + NL +
+                    "1 15" + NL +
+                    "1 40" + NL +
+                    "1 25" + NL +
+                    "1 35" + NL +
+                    "1 5" + NL +
+                    "2 0" + NL +
+                    "2 4" + NL +
+                    "1 2" + NL +
+                    "1 25" + NL +
+                    "1 3" + NL;
             byte[] buf = input.getBytes();
             System.setIn(new ByteArrayInputStream(buf ));
             
             Ex18IndexedTree.main(null);
             
             String actual = out.getOutput();
-            assertEquals("2" + System.lineSeparator(), actual);
+//            String expected = "0 0 2 1 ";
+            String expected = "0 0 1 0 3 1 3 2 8 7 3 8 ";
+            assertEquals(expected, actual);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception: " + e);
         }
+    }
+    
+    @Test
+    public void testMainInput() {
+        Ex18IndexedTree.AvlTree tree = new Ex18IndexedTree.AvlTree();
+        
+        assertEquals(0, tree.add(10));
+        assertEquals(0, tree.add(30));
+        assertEquals(1, tree.add(20));
+        assertEquals(0, tree.add(50));
+        assertEquals(3, tree.add(15));
+        assertEquals(1, tree.add(40));
+        assertEquals(3, tree.add(25));
+        assertEquals(2, tree.add(35));
+        assertEquals(8, tree.add(5));
+        
+        tree.delete(50);
+        tree.delete(25);
+        assertEquals(7, tree.add(2));
+        assertEquals(3, tree.add(25));
+        assertEquals(8, tree.add(3));
     }
     
     @Test
@@ -72,12 +115,16 @@ public class Ex18IndexedTreeTest {
         i = tree.add(2);
         assertEquals(2, i);
         i = tree.add(7);
-        assertEquals(0, i);
+        assertEquals(0, i); //
         i = tree.add(5);
         assertEquals(2, i);
         i = tree.add(3);
-        assertEquals(4, i);
+        assertEquals(4, i); //
         i = tree.add(1);
+        assertEquals(6, i);
+        
+        tree.delete(4);
+        i = tree.add(0);
         assertEquals(6, i);
     }
     
